@@ -96,20 +96,7 @@ func initTemplates() {
 }
 
 func renderPage(e *core.RequestEvent, name string, data any) error {
-	t, ok := pageTemplates[name]
-	if !ok {
-		return e.InternalServerError("Template not found: "+name, nil)
-	}
-
-	var buf bytes.Buffer
-	if err := t.ExecuteTemplate(&buf, "base", data); err != nil {
-		return e.InternalServerError("Template error: "+err.Error(), nil)
-	}
-
-	e.Response.Header().Set("Content-Type", "text/html; charset=utf-8")
-	e.Response.WriteHeader(http.StatusOK)
-	_, err := buf.WriteTo(e.Response)
-	return err
+	return renderPartial(e, name, "base", data)
 }
 
 func renderPartial(e *core.RequestEvent, name, block string, data any) error {

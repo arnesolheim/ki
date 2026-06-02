@@ -13,6 +13,16 @@ import (
 	"github.com/pocketbase/pocketbase/tools/types"
 )
 
+// requireTiming fetches a timing by path ID and verifies ownership.
+func requireTiming(e *core.RequestEvent, auth *core.Record) (*core.Record, error) {
+	id := e.Request.PathValue("id")
+	record, err := e.App.FindRecordById("timings", id)
+	if err != nil || record.GetString("userId") != auth.Id {
+		return nil, e.NotFoundError("Timing not found", nil)
+	}
+	return record, nil
+}
+
 // Start a new timing
 func handleTimingStart(e *core.RequestEvent) error {
 	auth, err := requireAuth(e)
@@ -59,10 +69,9 @@ func handleTimingStop(e *core.RequestEvent) error {
 		return err
 	}
 
-	id := e.Request.PathValue("id")
-	record, err := e.App.FindRecordById("timings", id)
-	if err != nil || record.GetString("userId") != auth.Id {
-		return e.NotFoundError("Timing not found", nil)
+	record, err := requireTiming(e, auth)
+	if err != nil {
+		return err
 	}
 
 	record.Set("isActive", false)
@@ -82,10 +91,9 @@ func handleTimingAddTag(e *core.RequestEvent) error {
 		return err
 	}
 
-	id := e.Request.PathValue("id")
-	record, err := e.App.FindRecordById("timings", id)
-	if err != nil || record.GetString("userId") != auth.Id {
-		return e.NotFoundError("Timing not found", nil)
+	record, err := requireTiming(e, auth)
+	if err != nil {
+		return err
 	}
 
 	tag := strings.TrimSpace(e.Request.FormValue("tag"))
@@ -116,10 +124,9 @@ func handleTimingRemoveTag(e *core.RequestEvent) error {
 		return err
 	}
 
-	id := e.Request.PathValue("id")
-	record, err := e.App.FindRecordById("timings", id)
-	if err != nil || record.GetString("userId") != auth.Id {
-		return e.NotFoundError("Timing not found", nil)
+	record, err := requireTiming(e, auth)
+	if err != nil {
+		return err
 	}
 
 	tag := strings.TrimSpace(e.Request.FormValue("tag"))
@@ -150,10 +157,9 @@ func handleTimingEditTime(e *core.RequestEvent) error {
 		return err
 	}
 
-	id := e.Request.PathValue("id")
-	record, err := e.App.FindRecordById("timings", id)
-	if err != nil || record.GetString("userId") != auth.Id {
-		return e.NotFoundError("Timing not found", nil)
+	record, err := requireTiming(e, auth)
+	if err != nil {
+		return err
 	}
 
 	startTimeStr := e.Request.FormValue("startTime")
@@ -193,10 +199,9 @@ func handleTimingEditDescription(e *core.RequestEvent) error {
 		return err
 	}
 
-	id := e.Request.PathValue("id")
-	record, err := e.App.FindRecordById("timings", id)
-	if err != nil || record.GetString("userId") != auth.Id {
-		return e.NotFoundError("Timing not found", nil)
+	record, err := requireTiming(e, auth)
+	if err != nil {
+		return err
 	}
 
 	description := e.Request.FormValue("description")
@@ -220,10 +225,9 @@ func handleTimingDelete(e *core.RequestEvent) error {
 		return err
 	}
 
-	id := e.Request.PathValue("id")
-	record, err := e.App.FindRecordById("timings", id)
-	if err != nil || record.GetString("userId") != auth.Id {
-		return e.NotFoundError("Timing not found", nil)
+	record, err := requireTiming(e, auth)
+	if err != nil {
+		return err
 	}
 
 	if err := e.App.Delete(record); err != nil {
