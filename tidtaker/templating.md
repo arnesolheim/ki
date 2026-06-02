@@ -90,7 +90,7 @@ Dette prosjektet bruker Go's innebygde `html/template`-pakke. Den er syntaktisk 
 |----------|---------|-------------|
 | `formatDuration` | `{{formatDuration .Start .Stop}}` | Viser varighet som `1t 23m 45s` |
 | `formatTime` | `{{formatTime .StartTime}}` | Viser klokkeslett `HH:MM:SS` |
-| `formatDate` | `{{formatDate .StartTime}}` | Viser dato `DD.MM.YYYY` |
+| `formatDate` | `{{formatDate .StartTime}}` | Viser dato på norsk langt format, f.eks. `21. april 2026` |
 | `localTime` | `{{localTime .StartTime}}` | ISO-format for `datetime-local` input |
 | `add` / `sub` | `{{add .Index 1}}` | Enkel aritmetikk |
 | `seq` | `{{range seq 5}}` | Lager liste `[0,1,2,3,4]` |
